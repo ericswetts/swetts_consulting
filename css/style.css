@@ -1,0 +1,219 @@
+.fa-times {
+    right: 10px;
+    top: 10px;
+    opacity: 0.7;
+    cursor: pointer;
+    position: absolute;
+    color: white;
+    transition: all 0.2s ease-in-out;
+}
+
+.fa-times:hover {
+    opacity: 1;
+}
+
+
+.toggle_menu {
+    position: fixed;
+    padding: 15px 20px 15px 15px;
+    margin-top: 70px;
+    color: white;
+    cursor: pointer;
+    background-color: #9ec6a9;
+    opacity: 0;
+    z-index: 5;
+    font-size: 1.5em;
+    transition: all 0.2s ease-in-out;
+}
+
+.opacity_one {
+    opacity: 1;
+    transition: all 0.2s ease-in-out;
+}
+
+.toggle_menu:hover {
+    background-color: #1E2436;
+    transition: all 0.2s ease-in-out;
+}
+
+.boxed_item {
+    font-family: 'Open Sans';
+    font-weight: 200;
+    padding: 10px 20px;
+    display: inline-block;
+    border: solid 2px white;
+    box-sizing: border-box;
+    font-size: 22px;
+    color: white;
+    text-align: center;
+}
+
+.logo_bold {
+    font-weight: 800;
+}
+
+.logo_title {
+    color: white;
+    font-family: 'Open Sans';
+    font-weight: 200;
+    font-size: 12px;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.menu_close {
+    color: #D8D8D8;
+    position: absolute;
+    right: 8px;
+    opacity: 0.7;
+    top: 6px;
+    font-size: 1.1em;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    z-index: 5;
+}
+
+
+
+.menu_close:hover {
+    color: #FE4365;
+    opacity: 1;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar-brand {
+    max-height: 120px;
+}
+
+.nav-item {
+    margin-right: 50px;
+}
+
+
+.boxed_item_smaller {
+    font-size: 12px;
+    color: #D8D8D8;
+    width: 200px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    border-width: 1px;
+    margin: 0 0 20px 0;
+}
+
+.boxed_item_smaller:hover {
+    background-color: white;
+    color: #111;
+    transition: all 0.3s ease-in-out;
+}
+
+
+.sidebar-header {
+    max-height: 40px;
+    width: auto;
+}
+
+
+.footer {
+    background-color: #9ec6a9;
+    border-top: solid #1E2436 1px;
+    position: fixed;
+    width: 100%;
+}
+
+.jumbotron-fluid {
+    max-height: 700px;
+    overflow-y: hidden;
+}
+
+
+.ct {
+    font-family: 'Raleway', sans-serif !important;
+    font-weight: 300 !important;
+    background: linear-gradient(white, #9ebbc6);
+    font-style: italic;
+}
+
+
+.ct l {
+    color: #9ec6a9;
+    float: left;
+    font-family: 'Raleway', sans-serif;
+    line-height: 0.5em;
+    padding-top: .25em;
+    padding-right: .3em;
+}
+
+.h {
+    font-family: 'Raleway', sans-serif;
+    font-style: light;
+    font-weight: 400;
+    padding-top: 4vh;
+    color: #9EC6A9;
+    font-weight: 500;
+}
+
+
+.index.aspx #right {
+    display: none;
+}
+
+.icon_images {
+    max-height:50px;
+    margin-right: 30px;
+}
+
+.background_image {
+    background-image: url("/images/city-sm.jpg");
+}
+
+
+/*For Indenting lists*/
+
+ul {
+    list-style: disc inside none;
+    padding: 0 0 0 30px;
+}
+
+.pop {
+    background-color: #FFFFFF;
+    border: 1px solid black;
+    border-radius: 3px 3px 3px 3px;
+    list-style: disc inside none;
+    padding: 1em 1em 1em 1em;
+}
+
+.home_img {
+    border-bottom: 2px #9ec6a9 solid;
+    z-index: -4;
+    position: relative;
+    max-height: 60vh;
+    overflow-y: hidden;
+}
+
+.home_txt {
+    z-index: -2;
+    padding: 0 10vw 0 10vw;
+    background-color: #FFFFFF;
+    position: absolute;
+}
+
+.h_index {
+    background-color: #1E2436;
+    color: #F0F1EB !important;
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+}
+
+.spacer {
+  height: 2em;
+}
+
+.image {
+    max-height: 100vh;
+    overflow-x: hidden;
+}
+
+.image-round{
+  border-radius: 50%;
+}

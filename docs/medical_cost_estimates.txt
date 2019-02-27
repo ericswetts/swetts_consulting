@@ -1,0 +1,147 @@
+cd "C:\Users\Eric\Desktop\Flu_Sim"
+
+/*Summary of Medical Costs Associated with Symptomatic Influenza Cases
+Last Update- 5/16/2016 by Eric Swetts*/
+
+/*To use this script: 
+1) Place simulation output in .csv format into the 'Sims" subfolder
+2) For naming each simulation, use syntax 'SC_Flu_xx'. Here, I have three simulations, 
+S1, S2, and S3, each of which takes the place of 'xx' in the simulation name.
+3) Add the 'xx' to local SIM (immediately below)
+4) Add a merge statement and merge'xx'Sim.dta 
+5) This script creates a final dataset of SimWRates.dta. All other datasets that are produced 
+(one for each simulation import)can be deleted, and will need to be to re-run the entire script. */
+
+
+/*Import all Simulations- add an entry after 'local' for additional simulations*/
+local Sim S1 S2 S3
+
+foreach x of local Sim {
+
+import delimited "Sims\SC_Flu_`x'.csv" 
+
+
+/*Keeping only means of each age category*/
+keep  _4_mean _17_mean _49_mean _64_mean _up_mean 
+
+rename _4_mean mean_0_4
+rename _17_mean mean_5_17
+rename _49_mean mean_18_49
+rename _64_mean mean_50_64
+rename _up_mean mean_65_up
+
+/*Generate total # symptomatic cases per age category per simulation
+I get the cumulative incidence of each age categoy and multiply by .67
+to determine the number of symptomatic cases.*/
+/*S1- First Simulation, S2= Second Simulation, S3= 3rd Simulation*/
+
+egen `x'_0_4 = total(mean_0_4)
+gen `x'T_0_4 = `x'_0_4*.67 
+
+egen `x'_5_17 = total(mean_5_17)
+gen `x'T_5_17 = `x'_5_17*.67 
+
+egen `x'_18_49 = total(mean_18_49)
+gen `x'T_18_49 = `x'_18_49*.67 
+
+egen `x'_50_64 = total(mean_50_64)
+gen `x'T_50_64 = `x'_50_64*.67 
+
+egen `x'_65_up = total(mean_65_up)
+gen `x'T_65_up = `x'_65_up*.67 
+
+
+/*Dropping unadjusted variables 
+(ie. not multiplied by .67 and original means categories)*/
+drop mean_0_4 mean_5_17 mean_18_49 mean_50_64 mean_65_up `x'_0_4 `x'_5_17 `x'_18_49 `x'_50_64 `x'_65_up
+
+/*Set up data for merging*/
+gen id=1
+keep in 1/1
+
+label var `x'T_0_4"`x'Symp Cases 0-4"
+label var `x'T_5_17"`x'Symp Cases 5-17"
+label var `x'T_18_49"`x'Symp Cases 18-49"
+label var `x'T_50_64"`x'Symp Cases 50-64"
+label var `x'T_65_up"`x'Symp Cases 65_Up"
+
+save `x'SIM
+clear all
+}
+
+
+/*Merging Datasets*/
+use "S1SIM.dta"
+merge 1:1 id using "S2SIM.dta" 
+drop _merge
+merge 1:1 id using "S3SIM.dta"
+drop _merge
+merge 1:1 id using "rates\rates.dta" 
+drop _merge
+save "SimWRates.dta"
+
+
+
+/*Generate Number of Cases by Age Group and Simulation*/
+use "C:\Users\Eric\Desktop\Flu_Sim\SimWRates.dta" 
+aorder
+
+foreach x of local Sim {
+
+local age _0_4 _5_17 _18_49 _50_64 _65_up
+
+foreach y of local age {
+
+/*Calculate Cases per age group per simulation*/
+gen `x'`y'_C_HR=`x'T`y'*HRSC`y'
+gen `x'`y'_C_NHR=`x'T`y'-`x'`y'_C_HR
+gen `x'`y'_C_OP_NHR=`x'`y'_C_NHR*OPNHR`y'
+gen `x'`y'_C_OP_HR=`x'`y'_C_HR*OPHR`y'
+gen `x'`y'_C_HOSP_NHR=`x'`y'_C_NHR*HOSP`y'
+gen `x'`y'_C_HOSP_HR=`x'`y'_C_HR*HOSP`y'
+
+
+/*Calculate Medical Costs*/
+/*NMA=Not medically attended, #cases * by 3*/
+gen `x'`y'_F_NMA=((`x'`y'_C_HR+`x'`y'_C_NHR)-(`x'`y'_C_OP_NHR+`x'`y'_C_OP_HR+`x'`y'_C_HOSP_NHR+`x'`y'_C_HOSP_HR))*3
+gen `x'`y'_F_OP_NHR=`x'`y'_C_OP_NHR*MC_OP_HR`y'
+gen `x'`y'_F_OP_HR=`x'`y'_C_OP_HR*MC_OP_HR`y'
+gen `x'`y'_F_HOSP_NHR=`x'`y'_C_HOSP_NHR*MC_HOSP_HR`y'
+gen `x'`y'_F_HOSP_HR=`x'`y'_C_HOSP_HR*MC_HOSP_HR`y'
+
+
+/*Apply Labels*/
+/*Labels for Final Costs of Medical Treatment by age group, risk, simulation, and type of treatment*/
+label var `x'`y'_F_NMA"Final Cost_`x'`y'_Not Medically Attended"
+label var `x'`y'_F_OP_NHR"Final Cost_`x'`y'_OutPatient Non High Risk"
+label var `x'`y'_F_OP_HR"Final Cost_`x'`y'_OutPatient- High Risk"
+label var `x'`y'_F_HOSP_NHR"Final Cost_`x'`y'_Hospitalized- Not High Risk"
+label var `x'`y'_F_HOSP_HR"Final Cost_`x'`y'_Hospitalized- High Risk"
+
+/*Labels for Infection Proportions*/
+label var HRSC`y' "Rate`y'High Risk for Serious Complications"
+label var OPNHR`y' "Rate`y'Outpatient, Non-High Risk"
+label var OPHR`y' "Rate`y'Outpatient, High Risk"
+label var HOSP`y' "Rate`y'All-Risk Hospitalization"
+label var DE`y' "Rate`y'All-Risk of Death"
+
+/*Labels for # of cases*/
+label var `x'`y'_C_HR"Cases_`x'`y'-High-Risk"
+label var `x'`y'_C_NHR"Cases_`x'`y'-Non-High Risk"
+label var `x'`y'_C_OP_NHR"Cases_`x'`y'-Outpatient-Non-High Risk"
+label var `x'`y'_C_OP_HR"Cases_`x'`y'-Outpatient-High-Risk"
+label var `x'`y'_C_HOSP_NHR"Cases_`x'`y'-Hospitalized- Non-High Risk"
+label var `x'`y'_C_HOSP_HR"Cases_`x'`y'Hospitalized- High Risk"
+
+/*LABELS FOR MEDICAL COSTS PER TYPE OF CASE*/
+label var MC_OP_NHR`y'"Cost Per Case`y'-Outpatient- Non-High Risk"
+label var MC_OP_HR`y'"Cost Per Case`y'-Outpatient Cases- High-Risk"
+label var MC_HOSP_NHR`y'"Cost Per Case`y'-Hospitalized Cases- Non-High Risk"
+label var MC_HOSP_HR`y'"Cost Per Case`y'-Hospitalized Cases- High Risk"
+}
+}
+
+
+
+
+
